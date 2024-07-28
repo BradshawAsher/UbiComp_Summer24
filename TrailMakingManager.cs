@@ -1,18 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class TrailMakingManager : MonoBehaviour
 {
     public Transform iconsParent; // Reference to IconsParent GameObject
     public GameObject[] iconPrefabs; // Array of icon prefabs
-    public int numberOfIcons = 8; // Total number of icons to instantiate
+    public int numberOfIcons = 20; // Total number of icons to instantiate (set this to 20)
+    public GameObject menuPanel; // Reference to the menu panel (assign menuBackground here)
+
     private List<int> correctOrder = new List<int>(); // Order of icons to click
     private int currentIndex = 0; // Index of the current correct icon
     private int errors = 0; // Count of errors
 
     private void Start()
     {
+        // Check if menuPanel is assigned
+        if (menuPanel == null)
+        {
+            Debug.LogError("Menu Panel is not assigned in the Inspector.");
+            return;
+        }
+
+        menuPanel.SetActive(false); // Hide the menu panel at the start
+
         // Instantiate icons
         for (int i = 0; i < numberOfIcons; i++)
         {
@@ -57,6 +70,13 @@ public class TrailMakingManager : MonoBehaviour
     private void ShowResults()
     {
         // Implement the logic to show results, e.g., UI popup
+        menuPanel.SetActive(true); // Show the menu panel
         Debug.Log("Game Over! Errors: " + errors);
+    }
+
+    public void RestartGame()
+    {
+        // Reload the current scene to restart the game
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
