@@ -7,19 +7,19 @@ public class Icon : MonoBehaviour
     public int iconID; // ID for the icon
     public float fadeDuration = 0.5f; // Duration for fading out
     private SpriteRenderer spriteRenderer;
-    private TrailMakingManager trailMakingManager;
+    public TrailMakingManager manager; // Reference to the TrailMakingManager
 
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        trailMakingManager = FindObjectOfType<TrailMakingManager>(); // Find the TrailMakingManager in the scene
+        // Remove the line that finds the manager, as we will assign it directly
     }
 
     private void OnMouseDown()
     {
-        if (trailMakingManager != null)
+        if (manager != null)
         {
-            trailMakingManager.IconClicked(iconID);
+            manager.IconClicked(iconID);
             StartCoroutine(FadeOutAndDestroy());
         }
     }

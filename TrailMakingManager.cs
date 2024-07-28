@@ -1,61 +1,46 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class TrailMakingManager : MonoBehaviour
 {
     public Transform iconsParent; // Reference to IconsParent GameObject
     public GameObject[] iconPrefabs; // Array of icon prefabs
-    public int numberOfIcons = 20; // Total number of icons to instantiate (set this to 20)
-    public GameObject menuPanel; // Reference to the menu panel (assign menuBackground here)
-
-    private List<int> correctOrder = new List<int>(); // Order of icons to click
-    private int currentIndex = 0; // Index of the current correct icon
-    private int errors = 0; // Count of errors
+    public int numberOfIcons = 20; // Total number of icons to instantiate
+    public GameObject menuPanel; // Reference to the Menu Panel GameObject
+    private int clickCount = 0; // Count of total clicks
 
     private void Start()
     {
-        // Check if menuPanel is assigned
-        if (menuPanel == null)
-        {
-            Debug.LogError("Menu Panel is not assigned in the Inspector.");
-            return;
-        }
-
-        menuPanel.SetActive(false); // Hide the menu panel at the start
+        menuPanel.SetActive(false); // Ensure the menu panel is initially inactive
+        Debug.Log("Game Started");
 
         // Instantiate icons
         for (int i = 0; i < numberOfIcons; i++)
         {
             GameObject iconPrefab = iconPrefabs[Random.Range(0, iconPrefabs.Length)];
             GameObject iconInstance = Instantiate(iconPrefab, GetRandomPosition(), Quaternion.identity, iconsParent);
-            
-            // Assign a unique ID to each icon (you need to set IDs in the prefabs)
+
+            // Assign a unique ID to each icon
             Icon iconScript = iconInstance.GetComponent<Icon>();
             if (iconScript != null)
             {
-                iconScript.iconID = i; // Set an ID for each icon (change as needed)
-                correctOrder.Add(iconScript.iconID); // Add to the correct order list
+                iconScript.iconID = i; // Set an ID for each icon
+                iconScript.manager = this; // Assign the manager to the icon
             }
         }
     }
 
     public void IconClicked(int id)
     {
-        if (id == correctOrder[currentIndex])
+        Debug.Log("Icon clicked with ID: " + id);
+
+        clickCount++;
+        if (clickCount >= numberOfIcons) // Check after incrementing the click count
         {
-            currentIndex++;
-            if (currentIndex >= correctOrder.Count)
-            {
-                // Game finished, show results
-                ShowResults();
-            }
-        }
-        else
-        {
-            errors++;
+            // Game finished, show results
+            ShowResults();
         }
     }
 
@@ -69,14 +54,15 @@ public class TrailMakingManager : MonoBehaviour
 
     private void ShowResults()
     {
-        // Implement the logic to show results, e.g., UI popup
-        menuPanel.SetActive(true); // Show the menu panel
-        Debug.Log("Game Over! Errors: " + errors);
+        // Show the menu panel when the game is finished
+        Debug.Log("Game Over! Total clicks: " + clickCount);
+        menuPanel.SetActive(true);
     }
 
     public void RestartGame()
     {
-        // Reload the current scene to restart the game
+        // Restart the game by reloading the current scene
+        Debug.Log("Restarting Game...");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
